@@ -39,9 +39,12 @@ button.play:disabled { opacity: .45; cursor: not-allowed }
 .event strong, .event small { display: block }
 .event strong { font-size: 13px }
 .event small { margin-top: 3px; color: #7a8495; font-size: 11px }
-.playback-marker-wrapper, .visit-marker-wrapper { background: transparent !important; border: 0 !important }
+.playback-marker-wrapper, .visit-marker-wrapper, .trip-start-wrapper, .trip-end-wrapper { background: transparent !important; border: 0 !important }
 .playback-marker { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: rgba(23,32,51,.18); box-shadow: 0 2px 8px rgba(0,0,0,.28) }
 .playback-marker span { width: 12px; height: 12px; border-radius: 50%; background: #172033; border: 2px solid white; display: block }
 .visit-marker { width: 18px; height: 18px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: #d9485f; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,.25) }
+.trip-start-marker, .trip-end-marker { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 11px; font-weight: 800; border: 2px solid #fff; box-shadow: 0 2px 7px rgba(0,0,0,.3); transform: translateZ(0) }
+.trip-start-marker { background: #16834b }
+.trip-end-marker { background: #b42318 }
 .leaflet-popup-content { font-size: 12px }
 @media (max-width: 800px) { .app { overflow: auto; height: 100dvh } header { position: sticky; top: 0 } .content { grid-template-columns: 1fr; grid-template-rows: 55vh auto; } .panel { border-left: 0; border-top: 1px solid #e3e7ec } .count { display: none } }
