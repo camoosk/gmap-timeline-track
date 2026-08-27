@@ -19,6 +19,8 @@ input[type=file] { display: none }
 .toolbar { min-height: 58px; display: flex; align-items: center; gap: 10px; padding: 10px 16px; background: #fff; border-bottom: 1px solid #e3e7ec; z-index: 900 }
 select, button { border: 1px solid #d7dce3; background: white; border-radius: 8px; padding: 9px 12px; color: #172033 }
 button.play { background: #172033; color: white; border-color: #172033; font-weight: 650 }
+button.play:disabled { opacity: .45; cursor: not-allowed }
+.speed { min-width: 68px }
 .count { margin-left: auto; color: #697386; font-size: 12px }
 .content { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 330px }
 .map { min-width: 0; min-height: 0 }
@@ -30,9 +32,16 @@ button.play { background: #172033; color: white; border-color: #172033; font-wei
 .playhead input[type=range] { width: 100%; margin: 12px 0 0 }
 .panel h3 { margin: 16px 15px 8px; font-size: 13px; color: #697386; text-transform: uppercase; letter-spacing: .06em }
 .events { padding: 0 15px 25px }
-.event { display: flex; gap: 10px; padding: 11px 0; border-bottom: 1px solid #eef0f3 }
-.dot { flex: 0 0 8px; width: 8px; height: 8px; margin-top: 5px; border-radius: 50%; background: #172033 }
+.event { display: flex; gap: 10px; padding: 11px 0; border-bottom: 1px solid #eef0f3; transition: background .15s }
+.event.active { background: #f3f6fb; margin-inline: -8px; padding-inline: 8px; border-radius: 8px }
+.dot { flex: 0 0 9px; width: 9px; height: 9px; margin-top: 5px; border-radius: 50%; background: #172033 }
+.event.active .dot { box-shadow: 0 0 0 4px rgba(23,32,51,.12) }
 .event strong, .event small { display: block }
 .event strong { font-size: 13px }
 .event small { margin-top: 3px; color: #7a8495; font-size: 11px }
+.playback-marker-wrapper, .visit-marker-wrapper { background: transparent !important; border: 0 !important }
+.playback-marker { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: rgba(23,32,51,.18); box-shadow: 0 2px 8px rgba(0,0,0,.28) }
+.playback-marker span { width: 12px; height: 12px; border-radius: 50%; background: #172033; border: 2px solid white; display: block }
+.visit-marker { width: 18px; height: 18px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: #d9485f; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,.25) }
+.leaflet-popup-content { font-size: 12px }
 @media (max-width: 800px) { .app { overflow: auto; height: 100dvh } header { position: sticky; top: 0 } .content { grid-template-columns: 1fr; grid-template-rows: 55vh auto; } .panel { border-left: 0; border-top: 1px solid #e3e7ec } .count { display: none } }
