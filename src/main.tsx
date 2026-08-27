@@ -21,14 +21,25 @@ const visitIcon = L.divIcon({
   iconAnchor: [9, 9],
 })
 
+const tripStartIcon = L.divIcon({
+  className: 'trip-start-wrapper',
+  html: '<div class="trip-start-marker">A</div>',
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+})
+
+const tripEndIcon = L.divIcon({
+  className: 'trip-end-wrapper',
+  html: '<div class="trip-end-marker">B</div>',
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+})
+
 function FitMap({ points }: { points: LatLng[] }) {
   const map = useMap()
   useEffect(() => {
-    if (points.length === 1) {
-      map.setView([points[0].lat, points[0].lng], 15)
-    } else if (points.length > 1) {
-      map.fitBounds(L.latLngBounds(points.map(p => [p.lat, p.lng] as [number, number])), { padding: [35, 35] })
-    }
+    if (points.length === 1) map.setView([points[0].lat, points[0].lng], 15)
+    else if (points.length > 1) map.fitBounds(L.latLngBounds(points.map(p => [p.lat, p.lng] as [number, number])), { padding: [35, 35] })
   }, [points, map])
   return null
 }
@@ -48,15 +59,14 @@ function distanceKm(events: TimelineEvent[]) {
 function buildPlaybackPoints(events: TimelineEvent[]) {
   const points = events
     .flatMap(event => event.points)
-    .filter(point => point.time)
-    .sort((a, b) => new Date(a.time!).getTime() - new Date(b.time!).getTime())
+    .filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lng))
+    .map((point, index) => ({ ...point, time: point.time ?? events[Math.min(index, events.length - 1)]?.start }))
+    .sort((a, b) => new Date(a.time ?? 0).getTime() - new Date(b.time ?? 0).getTime())
 
   const result: LatLng[] = []
   for (const point of points) {
     const previous = result[result.length - 1]
-    if (!previous || previous.lat !== point.lat || previous.lng !== point.lng || previous.time !== point.time) {
-      result.push(point)
-    }
+    if (!previous || previous.lat !== point.lat || previous.lng !== point.lng || previous.time !== point.time) result.push(point)
   }
   return result
 }
@@ -138,8 +148,16 @@ function App() {
             <TileLayer attribution='&copy; OpenStreetMap contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             <FitMap points={allMapPoints} />
 
-            {routeEvents.map(event => <Polyline key={event.id} positions={event.points.map(p => [p.lat, p.lng] as [number, number])} pathOptions={{ weight: 4, opacity: 0.72 }} />)}
-            {tripEvents.map(event => event.points.length > 1 && <Polyline key={event.id} positions={event.points.map(p => [p.lat, p.lng] as [number, number])} pathOptions={{ weight: 5, opacity: 0.5, dashArray: '8 7' }} />)}
+            {routeEvents.map(event => <Polyline key={event.id} positions={event.points.map(p => [p.lat, p.lng] as [number, number])} pathOptions={{ weight: 4, opacity: 0.78 }} />)}
+            {tripEvents.map(event => event.points.length > 1 && <Polyline key={event.id} positions={event.points.map(p => [p.lat, p.lng] as [number, number])} pathOptions={{ weight: 5, opacity: 0.58, dashArray: '8 7' }} />)}
+
+            {tripEvents.map(event => event.points.length > 0 ? <Marker key={`${event.id}-start`} position={[event.points[0].lat, event.points[0].lng]} icon={tripStartIcon}>
+              <Popup><b>{event.activityType ?? 'Perjalanan'}</b><br />Mulai: {formatTime(event.start)}<br />Jarak: {event.distanceMeters ? `${(event.distanceMeters / 1000).toFixed(2)} km` : '—'}</Popup>
+            </Marker> : null)}
+
+            {tripEvents.map(event => event.points.length > 1 ? <Marker key={`${event.id}-end`} position={[event.points[event.points.length - 1].lat, event.points[event.points.length - 1].lng]} icon={tripEndIcon}>
+              <Popup><b>{event.activityType ?? 'Perjalanan'}</b><br />Selesai: {formatTime(event.end)}</Popup>
+            </Marker> : null)}
 
             {visits.map(event => {
               const point = event.points[0]
